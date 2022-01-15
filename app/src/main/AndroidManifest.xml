@@ -4,14 +4,14 @@
     package="moe.henry_zhr.kill_domain_verification">
 
     <application
-        android:label="Kill Domain Verification"
+        android:label="@string/app_name"
         tools:ignore="AllowBackup,MissingApplicationIcon">
         <meta-data
             android:name="xposedmodule"
             android:value="true" />
         <meta-data
             android:name="xposeddescription"
-            android:value="This module prevents the system (and also yourself) from allowing apps to always open supported links." />
+            android:value="@string/description" />
         <meta-data
             android:name="xposedminversion"
             android:value="53" />

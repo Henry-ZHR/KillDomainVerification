@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kill Domain Verification</string>
+    <string name="description">This module prevents the system (and also yourself) from allowing apps to always open supported links. It also enables you to open supported links in apps which are not "verified" on Android 12 and above.</string>
+</resources>
