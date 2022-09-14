@@ -23,11 +23,27 @@ public class MainHook implements IXposedHookLoadPackage {
 
     XposedBridge.log(String.format("[%s] Starting hook", TAG));
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      XposedBridge.log(String.format("[%s] Android 12 or above detected", TAG));
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      XposedBridge.log(String.format("[%s] Android 13 or above detected", TAG));
 
-      // used in frameworks/base/services/core/java/com/android/server/pm/PackageManagerService.java filterCandidatesWithDomainPreferredActivitiesLPrBody
-      // (cs.android.com failed to get the commit so there isn't a link)
+      // https://cs.android.com/android/platform/superproject/+/android-13.0.0_r3:frameworks/base/services/core/java/com/android/server/pm/ComputerEngine.java;l=1058
+      XposedHelpers.findAndHookMethod(
+          "com.android.server.pm.verify.domain.DomainVerificationUtils",
+          lpparam.classLoader,
+          "isDomainVerificationIntent",
+          Intent.class,
+          long.class,
+          new XC_MethodReplacement() {
+            @Override
+            protected Object replaceHookedMethod(MethodHookParam param) {
+              return false;
+            }
+          }
+      );
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      XposedBridge.log(String.format("[%s] Android 12 detected", TAG));
+
+      // https://cs.android.com/android/platform/superproject/+/android-12.0.0_r34:frameworks/base/services/core/java/com/android/server/pm/PackageManagerService.java;l=2788
       XposedHelpers.findAndHookMethod(
           "com.android.server.pm.verify.domain.DomainVerificationUtils",
           lpparam.classLoader,
