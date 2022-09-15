@@ -15,16 +15,20 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class MainHook implements IXposedHookLoadPackage {
   private final static String TAG = "KillDomainVerification";
 
+  private static void log(String message) {
+    XposedBridge.log(String.format("[%s] %s", TAG, message));
+  }
+
   @Override
   public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) {
     if (!lpparam.packageName.equals("android")) {
       return;
     }
 
-    XposedBridge.log(String.format("[%s] Starting hook", TAG));
+    log("Starting hook");
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      XposedBridge.log(String.format("[%s] Android 13 or above detected", TAG));
+      log("Android 13 or above detected");
 
       // https://cs.android.com/android/platform/superproject/+/android-13.0.0_r3:frameworks/base/services/core/java/com/android/server/pm/ComputerEngine.java;l=1058
       XposedHelpers.findAndHookMethod(
@@ -33,15 +37,10 @@ public class MainHook implements IXposedHookLoadPackage {
           "isDomainVerificationIntent",
           Intent.class,
           long.class,
-          new XC_MethodReplacement() {
-            @Override
-            protected Object replaceHookedMethod(MethodHookParam param) {
-              return false;
-            }
-          }
+          XC_MethodReplacement.returnConstant(false)
       );
     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      XposedBridge.log(String.format("[%s] Android 12 detected", TAG));
+      log("Android 12 detected");
 
       // https://cs.android.com/android/platform/superproject/+/android-12.0.0_r34:frameworks/base/services/core/java/com/android/server/pm/PackageManagerService.java;l=2788
       XposedHelpers.findAndHookMethod(
@@ -50,15 +49,10 @@ public class MainHook implements IXposedHookLoadPackage {
           "isDomainVerificationIntent",
           Intent.class,
           int.class,
-          new XC_MethodReplacement() {
-            @Override
-            protected Object replaceHookedMethod(MethodHookParam param) {
-              return false;
-            }
-          }
+          XC_MethodReplacement.returnConstant(false)
       );
     } else {
-      XposedBridge.log(String.format("[%s] Android 11 or below detected", TAG));
+      log("Android 11 or below detected");
 
       // https://cs.android.com/android/platform/superproject/+/android-11.0.0_r48:frameworks/base/services/core/java/com/android/server/pm/PackageSettingBase.java
       XposedHelpers.findAndHookMethod(
@@ -78,9 +72,8 @@ public class MainHook implements IXposedHookLoadPackage {
                   field.set(param.getResult(), 1);
                 }
               } catch (Throwable t) {
-                XposedBridge.log(String.format(
-                    "[%s] Cannot set domainVerificationStatus (%s)",
-                    TAG,
+                log(String.format(
+                    "Cannot set domainVerificationStatus (%s)",
                     t.toString()
                 ));
               }
@@ -89,6 +82,6 @@ public class MainHook implements IXposedHookLoadPackage {
       );
     }
 
-    XposedBridge.log(String.format("[%s] Hook finished", TAG));
+    log("Hook finished");
   }
 }
