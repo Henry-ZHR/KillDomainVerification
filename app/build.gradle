@@ -9,8 +9,8 @@ android {
         applicationId "moe.henry_zhr.kill_domain_verification"
         minSdk 23
         targetSdk 33
-        versionCode 3
-        versionName "3"
+        versionCode 4
+        versionName "4"
     }
 
     buildTypes {
